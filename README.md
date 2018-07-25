@@ -70,3 +70,25 @@ webpack.base.js
   ...
 }
 ```
+##### 2.4 使用source map 帮助定位打包报错
+```
+{
+  ...
+  devtool: 'inline-source-map' // 还有其他可配置项
+  ...
+}
+```
+##### 2.5 监听文件变化（未运行成功）
+在package.json文件中新增命令
+```
+  "watch": "webpack --config .\\build\\webpack.base.js --watch"
+```
+-- watch 修改文件会重新编译文件，但是打开的静态html还需要刷新才能执行新代码
+##### 2.6 配置开发服务器
+使用express+webpck-dev-middleware插件搭开发服务器
+在package.json文件中新增命令
+```
+  "server": "node .\\build\\dev-server.js"
+```
+启用服务，需要手动输入网址，无hot-reload
+##### 2.7 hot-reload

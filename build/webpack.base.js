@@ -7,6 +7,7 @@ module.exports = {
     app: './src/main.js',
     print: './src/print.js'
   },
+  devtool: 'inline-source-map',
   plugins: [
     new HtmlWebpackPlugin({
       title: '这是Plugin设置的标题'
@@ -15,7 +16,8 @@ module.exports = {
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, '../dist')
+    path: path.resolve(__dirname, '../dist'),
+    publicPath: '/'
   },
   module: {
     rules: [
