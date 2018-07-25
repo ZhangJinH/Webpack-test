@@ -23,7 +23,7 @@ index.html
 ## 2.管理资源文件
 ##### 2.1 配置文件loader(解析文件)
 ```
-webpack.base.js
+// webpack.base.js
 {
   ...
   // webpack配置项
@@ -44,7 +44,7 @@ webpack.base.js
 ```
 ##### 2.2 配置多个入口文件
 ```
-webpack.base.js
+// webpack.base.js
 {
   ...
   entry: {
@@ -78,17 +78,92 @@ webpack.base.js
   ...
 }
 ```
-##### 2.5 监听文件变化（未运行成功）
+##### 2.5 监听文件变化
 在package.json文件中新增命令
 ```
   "watch": "webpack --config .\\build\\webpack.base.js --watch"
 ```
 -- watch 修改文件会重新编译文件，但是打开的静态html还需要刷新才能执行新代码
 ##### 2.6 配置开发服务器
-使用express+webpck-dev-middleware插件搭开发服务器
+###### 2.6.1 使用webpack配置项中的devServer搭建服务器
+```
+// webpack.base.js 
+{
+  ...
+  devServer: {
+    contentBase: '../dist', // 注意路径
+  }
+  ...
+}
+// package.json
+  "start": "webpack-dev-server --config .\\build\\webpack.base.js --open"
+```
+###### 2.6.2 使用express+webpck-dev-middleware插件搭开发服务器
+```
+// dev-server.js
+const express = require('express')
+const webpack = require('webpack')
+const WebpackDevMiddleware = require('webpack-dev-middleware')
+
+const app = express()
+
+const config = require('./webpack.base')
+
+const compiler = webpack(config)
+
+
+app.use(WebpackDevMiddleware(compiler, {
+  publicPath: config.output.publicPath
+}))
+
+// 监听4000端口
+app.listen(4000, function () {
+  console.log('app is listening on port 4000\n')
+})
+```
 在package.json文件中新增命令
 ```
   "server": "node .\\build\\dev-server.js"
 ```
 启用服务，需要手动输入网址，无hot-reload
+
 ##### 2.7 hot-reload
+在2.6的两种方式的基础上进行修改
+###### 2.7.1 使用webpack配置项中的devServer设置hot-reload
+```
+// webpack.base.js
+...
+  devServer: {
+    contentBase: '../dist', // 注意路径
+    hot: true // 启用hot-reload
+  }
+...
+```
+###### 2.7.1 使用nodejs Api (与上面逻辑差不多,换种方式处理,更灵活)
+```
+// dev-server.js
+const webpack = require('webpack')
+const webpackDevServer = require('webpack-dev-server')
+
+const config = require('./webpack.base')
+
+const options = {
+  contentBase: '../dist',
+  hot: true,
+  host: 'localhost'
+}
+
+// 配置webpackdevserver
+webpackDevServer.addDevServerEntrypoints(config, options)
+const compiler = webpack(config)
+
+const server = new webpackDevServer(compiler, options)
+
+// 启用server
+server.listen(5000, 'localhost', function () {
+  console.log('app is listening on port 4000\n')
+})
+```
+
+
+

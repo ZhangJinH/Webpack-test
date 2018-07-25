@@ -1,18 +1,20 @@
-const express = require('express')
 const webpack = require('webpack')
-const WebpackDevMiddleware = require('webpack-dev-middleware')
-
-const app = express()
+const webpackDevServer = require('webpack-dev-server')
 
 const config = require('./webpack.base')
 
+const options = {
+  contentBase: '../dist',
+  hot: true,
+  host: 'localhost'
+}
+
+
+webpackDevServer.addDevServerEntrypoints(config, options)
 const compiler = webpack(config)
 
+const server = new webpackDevServer(compiler, options)
 
-app.use(WebpackDevMiddleware(compiler, {
-  publicPath: config.output.publicPath
-}))
-
-app.listen(4000, function () {
+server.listen(5000, 'localhost', function () {
   console.log('app is listening on port 4000\n')
 })
